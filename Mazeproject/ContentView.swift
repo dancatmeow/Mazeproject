@@ -159,9 +159,9 @@ struct ContentView: View {
                 Button {
                     Task{
                         await catWalk("north")
+                        player.y += 1
                         walls = getwalls(x: player.x, y: player.y)
                         await catWalktomid("north")
-                        player.y += 1
                     }
                 } label: {
                     Text("↑")
@@ -182,10 +182,10 @@ struct ContentView: View {
                 Button {
                     Task{
                         await catWalk("west")
+                        player.x -= 1
                         walls = getwalls(x: player.x, y: player.y)
                         await catWalktomid("west")
                     }
-                    player.x -= 1
                 } label: {
                     Text("↑")
                         .font(.largeTitle)
@@ -206,10 +206,10 @@ struct ContentView: View {
                 Button {
                     Task{
                         await catWalk("east")
+                        player.x += 1
                         walls = getwalls(x: player.x, y: player.y)
                         await catWalktomid("east")
                     }
-                    player.x += 1
                 } label: {
                     Text("↑")
                         .font(.largeTitle)
@@ -230,10 +230,10 @@ struct ContentView: View {
                 Button {
                     Task{
                         await catWalk("south")
+                        player.y -= 1
                         walls = getwalls(x: player.x, y: player.y)
                         await catWalktomid("south")
                     }
-                    player.y -= 1
                 } label: {
                     Text("↑")
                         .font(.largeTitle)
