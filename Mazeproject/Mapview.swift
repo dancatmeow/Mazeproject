@@ -1,8 +1,11 @@
-//
-//  mapview.swift
-//  Mazeproject
-//
-//  Created by Daniel Stetsyuk on 6/9/26.
-//
 
-import Foundation
+import SwiftUI
+
+struct Mapview: View {
+    var body: some View {
+        Text("you havent bought map pass,pls buy first then use map")
+    }
+}
+#Preview {
+    Mapview()
+}
