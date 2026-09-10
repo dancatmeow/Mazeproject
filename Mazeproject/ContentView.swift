@@ -52,9 +52,11 @@ func glungusstate() -> Bool{
 struct playerinfo:Hashable {
     var hp: Int
     var coin: Int
-    var inventory: [String]
     var x : Int
     var y : Int
+    var uraniyums: Int
+    var mapstate: Bool
+    var glungusandcoinchance: Int
 }
 func walkanim(_ frame: Int) -> Int{
     if frame == 1{
@@ -92,6 +94,8 @@ struct ContentView: View {
     @State var saveg: [pos: Bool] = [:]
     @State var moving = false
     @State var showAlert = false
+    @State var arrowX :CGFloat = 75
+    @State var arrowY :CGFloat = -30
     func reset(){
         savew.removeAll()
         savec.removeAll()
@@ -100,7 +104,11 @@ struct ContentView: View {
         player.x = 0
         player.y = 0
         player.coin = 0
+        player.uraniyums = 0
+        player.mapstate = false
+        player.glungusandcoinchance = 0
         walls = getwalls(x: 0, y: 0)
+        
     }
     func getwalls(x: Int, y: Int) -> wallinfo {
         let position = pos(x: x, y: y)
@@ -227,11 +235,12 @@ struct ContentView: View {
                 ZStack(alignment: .leading) {
                     Rectangle()
                         .fill(.gray)
-                        .frame(width: 404, height: 90)
+                        .frame(width: 404, height: 50)
+                        .offset(x: 0, y: -25)
                     Rectangle()
                         .fill(.green)
-                        .frame(
-                            width: 404 * CGFloat(player.hp) / 100,height: 90)
+                        .frame(width: 404 * CGFloat(player.hp) / 100,height: 50)
+                        .offset(x: 0, y: -25)
                 }
                 .frame(width: 400, height: 50)
                 .position(x: 200, y: 520)
@@ -276,7 +285,7 @@ struct ContentView: View {
                             .background(.blue)
                     }
                     .rotationEffect(.degrees(45))
-                    .position(x: 200, y: 600)
+                    .position(x: 200+arrowX, y: 600+arrowY)
                 }
                 if walls.westWstate {
                     Rectangle()
@@ -317,7 +326,7 @@ struct ContentView: View {
                             .background(.blue)
                     }
                     .rotationEffect(.degrees(45))
-                    .position(x: 175, y: 325+300)
+                    .position(x: 175+arrowX, y: 625+arrowY)
                 }else {
                 }
                 if walls.eastWstate {
@@ -359,7 +368,7 @@ struct ContentView: View {
                             .background(.blue)
                     }
                     .rotationEffect(.degrees(45))
-                    .position(x: 225, y: 325+300)
+                    .position(x: 225+arrowX, y: 625+arrowY)
                 }
                 if !walls.northWstate && !walls.southWstate && !walls.eastWstate && !walls.westWstate{
                     Button {
@@ -372,7 +381,7 @@ struct ContentView: View {
                     Rectangle()
                         .fill(Color.white)
                         .frame(width: 150, height: 50)
-                        .position(x: 200, y: 450)
+                        .position(x: 200, y: 445)
                     Button {
                         if moving {
                             return
@@ -407,11 +416,11 @@ struct ContentView: View {
                             .background(.blue)
                     }
                     .rotationEffect(.degrees(45))
-                    .position(x: 200, y: 350+300)
+                    .position(x: 200+arrowX, y: 650+arrowY)
                 }
                 Rectangle()
                     .fill(Color.red)
-                    .frame(width: 500, height: 300)
+                    .frame(width: 500, height: 360)
                     .position(x: 200, y: 700)
                     .zIndex(-1)
             }
@@ -430,5 +439,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView(player: .constant(playerinfo(hp: 100, coin: 0, inventory: [], x: 0, y: 0)))
+    ContentView(player: .constant(playerinfo(hp: 100, coin: 0, x: 0, y: 0, uraniyums: 0,mapstate: false, glungusandcoinchance: 0)))
 }
