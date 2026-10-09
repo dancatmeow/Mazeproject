@@ -35,20 +35,6 @@ func showglungus(glungusstate: Bool) -> some View{
         EmptyView()
     }
 }
-func coinstate() -> Bool{
-    if Int.random(in: 1...4) == 1{
-        return true
-    }else {
-        return false
-    }
-}
-func glungusstate() -> Bool{
-    if Int.random(in: 1...5) == 1{
-        return true
-    }else {
-        return false
-    }
-}
 struct playerinfo:Hashable {
     var hp: Int
     var coin: Int
@@ -57,6 +43,7 @@ struct playerinfo:Hashable {
     var uraniyums: Int
     var mapstate: Bool
     var glungusandcoinchance: Int
+    var hammer: Int
 }
 func walkanim(_ frame: Int) -> Int{
     if frame == 1{
@@ -94,8 +81,10 @@ struct ContentView: View {
     @State var saveg: [pos: Bool] = [:]
     @State var moving = false
     @State var showAlert = false
-    @State var arrowX :CGFloat = 75
+    @State var arrowX :CGFloat = 0
     @State var arrowY :CGFloat = -30
+    @State var noitemalert = false
+    @State var fullhpalert = false
     func reset(){
         savew.removeAll()
         savec.removeAll()
@@ -108,7 +97,20 @@ struct ContentView: View {
         player.mapstate = false
         player.glungusandcoinchance = 0
         walls = getwalls(x: 0, y: 0)
-        
+    }
+    func Coinstate() -> Bool{
+        if Int.random(in: 1...4+player.glungusandcoinchance) == 1{
+            return true
+        }else {
+            return false
+        }
+    }
+    func Glungusstate() -> Bool{
+        if Int.random(in: 1...10+player.glungusandcoinchance) == 1{
+            return true
+        }else {
+            return false
+        }
     }
     func getwalls(x: Int, y: Int) -> wallinfo {
         let position = pos(x: x, y: y)
@@ -136,7 +138,7 @@ struct ContentView: View {
         if let saved = savec[position] {
             return saved
         }
-        let coin = Mazeproject.coinstate()
+        let coin = Coinstate()
         savec[position] = coin
         return coin
     }
@@ -149,7 +151,7 @@ struct ContentView: View {
             saveg[position] = false
             return false
         }
-        let glungus = Mazeproject.glungusstate()
+        let glungus = Glungusstate()
         saveg[position] = glungus
         return glungus
     }
@@ -192,11 +194,8 @@ struct ContentView: View {
             try? await Task.sleep(nanoseconds: 90_000_000)
         }
     }
-
     var body: some View {
         NavigationStack {
-            
-            
             VStack {
                 HStack(spacing: 0) {
                     Button {
@@ -208,11 +207,34 @@ struct ContentView: View {
                             .background(Color.gray.opacity(0.3))
                             .clipShape(Capsule())
                     }
-                    
                 }
             }
             ZStack {
-                
+                Capsule()
+                    .fill(Color.white)
+                    .frame(width: 70, height: 180)
+                    .position(x: 50, y: 615)
+                Button() {
+                    if player.uraniyums == 0{
+                        noitemalert = true
+                    } else if player.hp == 100{
+                        fullhpalert = true
+                    } else{
+                        player.uraniyums -= 1
+                        player.hp += 20
+                    }
+                }label: {
+                    ZStack{
+                        Image("uraniyum")
+                            .resizable()
+                            .frame(width: 70, height: 65)
+                        Text("\(player.uraniyums)")
+                            .offset(x:15 ,y: 20)
+                    }
+                }
+                .frame(width: 70, height: 180)
+                .contentShape(Rectangle())
+                .position(x: 50, y: 615)
                 cat(catFrame,catX,catY)
                 showcoin(coinstate:coinstate)
                 showglungus(glungusstate:glungusstate)
@@ -244,8 +266,6 @@ struct ContentView: View {
                 }
                 .frame(width: 400, height: 50)
                 .position(x: 200, y: 520)
-                
-                
                 if walls.northWstate {
                     Rectangle()
                         .fill(Color.white)
@@ -264,13 +284,14 @@ struct ContentView: View {
                             coinstate = getcoin(x: player.x, y: player.y)
                             glungusstate = getglungus(x: player.x, y: player.y)
                             await catWalktomid("north")
-                            if coinstate == true {
+                            if coinstate{
                                 player.coin += 1
                                 savec[pos(x: player.x, y: player.y)] = false
                             }
-                            if glungusstate == true {
+                            if glungusstate{
                                 player.hp -= 20
-                                saveg[pos(x: player.x, y: player.y)] = false
+                                let anotherxtrauselessvariable = pos(x: player.x, y: player.y)
+                                saveg[anotherxtrauselessvariable] = false
                             }
                             glungusstate = false
                             coinstate = false
@@ -429,15 +450,33 @@ struct ContentView: View {
                     showAlert = true
                 }
             }
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink{
+                        Settingsview(player: $player)
+                    }label: {
+                        Image(systemName: "gear")
+                    }
+                }
+            }
             .alert("you died", isPresented: $showAlert) {
                 Button("restart") {
                     reset()
                 }
             }
+            
+            .alert(isPresented: $noitemalert) {
+                Alert(title: Text("you do not have that"))
+            }
+            .alert(isPresented: $fullhpalert) {
+                Alert(title: Text("your hp is alr full \n greg is too full to eat that"))
+            }
+            
         }
     }
 }
-
 #Preview {
-    ContentView(player: .constant(playerinfo(hp: 100, coin: 0, x: 0, y: 0, uraniyums: 0,mapstate: false, glungusandcoinchance: 0)))
+    ContentView(player: .constant(playerinfo(hp: 100, coin: 0, x: 0, y: 0, uraniyums: 0,mapstate: false, glungusandcoinchance: 0,hammer: 0)))
 }

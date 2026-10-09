@@ -1,18 +1,15 @@
-//
-//  Settingsview.swift
-//  Mazeproject
-//
-//  Created by Daniel Stetsyuk on 14/9/26.
-//
-
 import SwiftUI
 
 struct Settingsview: View {
+    @Binding var player: playerinfo
+    @State var darkmode:Bool = false
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack{
+            Text("coming soon")
+        }
     }
 }
 
 #Preview {
-    Settingsview()
+    Settingsview(player: .constant(playerinfo(hp: 100, coin: 0, x: 0, y: 0, uraniyums: 0,mapstate: false, glungusandcoinchance: 0,hammer: 0)))
 }
